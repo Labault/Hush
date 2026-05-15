@@ -3,7 +3,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import type { Admin } from '@hush/shared'
 import * as adminApi from '../api/admin'
-import { AdminAuthError } from '../api/admin'
 
 type AdminContextValue = {
   admin: Admin | null
@@ -29,8 +28,8 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   const loginMutation = useMutation({
     mutationFn: ({ username, password }: { username: string; password: string }) =>
       adminApi.login(username, password),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'me'] })
+    onSuccess: (data) => {
+      queryClient.setQueryData(['admin', 'me'], data.admin)
     },
   })
 
@@ -77,4 +76,4 @@ export function useAdmin(): AdminContextValue {
   return ctx
 }
 
-export { AdminAuthError }
+export { AdminAuthError } from '../api/admin'
