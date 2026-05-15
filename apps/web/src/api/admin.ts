@@ -21,39 +21,34 @@ function getCsrfToken(): string {
   return match ? decodeURIComponent(match[1]) : ''
 }
 
-async function adminFetch<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, {
+async function adminFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const method = options.method ?? 'GET'
+  const isMutation = method !== 'GET' && method !== 'HEAD'
+  const csrfToken = getCsrfToken()
+
+  const response = await fetch(`${API_BASE}${path}`, {
     ...options,
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
-      ...options?.headers,
+      ...(isMutation && csrfToken ? { 'X-CSRF-Token': csrfToken } : {}),
+      ...(options.headers ?? {}),
     },
   })
 
-  if (res.status === 401) throw new AdminAuthError()
-  if (res.status === 403) throw new AdminCsrfError()
+  if (response.status === 401) throw new AdminAuthError()
+  if (response.status === 403) throw new AdminCsrfError()
 
-  if (!res.ok) {
-    let message = `HTTP ${res.status}`
+  if (!response.ok) {
+    let message = `HTTP ${response.status}`
     try {
-      const body = await res.json()
+      const body = await response.json()
       if (body?.message) message = body.message
     } catch { /* ignore */ }
     throw new Error(message)
   }
 
-  return res.json() as Promise<T>
-}
-
-function withCsrf(options?: RequestInit): RequestInit {
-  return {
-    ...options,
-    headers: {
-      ...options?.headers,
-      'X-CSRF-Token': getCsrfToken(),
-    },
-  }
+  return response.json() as Promise<T>
 }
 
 export function login(username: string, password: string) {
@@ -64,7 +59,7 @@ export function login(username: string, password: string) {
 }
 
 export function logout() {
-  return adminFetch<{ ok: true }>('/auth/logout', withCsrf({ method: 'POST' }))
+  return adminFetch<{ ok: true }>('/auth/logout', { method: 'POST' })
 }
 
 export function getMe() {
@@ -82,11 +77,11 @@ export function getAllSessions(page: number, perPage: number) {
 }
 
 export function invalidateSession(id: string) {
-  return adminFetch<AdminSession>(`/admin/sessions/${id}/invalidate`, withCsrf({ method: 'PATCH' }))
+  return adminFetch<AdminSession>(`/admin/sessions/${id}/invalidate`, { method: 'PATCH' })
 }
 
 export function revalidateSession(id: string) {
-  return adminFetch<AdminSession>(`/admin/sessions/${id}/revalidate`, withCsrf({ method: 'PATCH' }))
+  return adminFetch<AdminSession>(`/admin/sessions/${id}/revalidate`, { method: 'PATCH' })
 }
 
 export function getAllPlayers(page: number, perPage: number, search?: string) {
@@ -96,5 +91,5 @@ export function getAllPlayers(page: number, perPage: number, search?: string) {
 }
 
 export function deletePlayer(id: string) {
-  return adminFetch<AdminPlayer>(`/admin/players/${id}`, withCsrf({ method: 'DELETE' }))
+  return adminFetch<AdminPlayer>(`/admin/players/${id}`, { method: 'DELETE' })
 }
