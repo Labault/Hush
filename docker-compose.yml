@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: hush-postgres
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: hush
+      POSTGRES_PASSWORD: hush
+      POSTGRES_DB: hush
+    volumes:
+      - hush_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hush"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  hush_pgdata:
