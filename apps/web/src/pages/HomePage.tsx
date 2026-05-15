@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useState, useEffect, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { usePlayer } from '../hooks/usePlayer'
 import styles from './HomePage.module.css'
@@ -6,6 +6,8 @@ import styles from './HomePage.module.css'
 export default function HomePage() {
   const { player, isLoading, createNewPlayer, updatePseudo } = usePlayer()
   const navigate = useNavigate()
+
+  useEffect(() => { document.title = 'Hush' }, [])
 
   const [pseudo, setPseudo] = useState('')
   const [createError, setCreateError] = useState('')
