@@ -1,0 +1,65 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: hush-postgres-dev
+    restart: unless-stopped
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: hush
+      POSTGRES_PASSWORD: hush
+      POSTGRES_DB: hush
+    volumes:
+      - hush_pgdata_dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hush"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    image: node:22-alpine
+    container_name: hush-api-dev
+    working_dir: /app
+    command: sh -c "npm install && cd apps/api && npx prisma generate && npx prisma migrate dev --name auto && npm run start:dev"
+    environment:
+      DATABASE_URL: postgresql://hush:hush@postgres:5432/hush?schema=public
+      JWT_SECRET: dev-jwt-secret-not-for-prod-use-32chars-minimum-string-padding
+      JWT_EXPIRES_IN: 8h
+      COOKIE_SECRET: dev-cookie-secret-not-for-prod-use-32chars-minimum-padding
+      NODE_ENV: development
+      PORT: 3000
+      CHOKIDAR_USEPOLLING: "true"
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - node_modules_dev:/app/node_modules
+      - api_node_modules_dev:/app/apps/api/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  web:
+    image: node:22-alpine
+    container_name: hush-web-dev
+    working_dir: /app/apps/web
+    command: sh -c "cd /app && npm install && cd apps/web && npm run dev -- --host 0.0.0.0"
+    environment:
+      VITE_API_BASE_URL: /api
+      VITE_PROXY_TARGET: http://api:3000
+      CHOKIDAR_USEPOLLING: "true"
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - node_modules_dev:/app/node_modules
+      - web_node_modules_dev:/app/apps/web/node_modules
+    depends_on:
+      - api
+
+volumes:
+  hush_pgdata_dev:
+  node_modules_dev:
+  api_node_modules_dev:
+  web_node_modules_dev:

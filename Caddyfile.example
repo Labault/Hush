@@ -1,0 +1,31 @@
+# === Hush — Configuration Caddy ===
+# À coller dans /etc/caddy/Caddyfile sur le VPS.
+# Caddy obtient automatiquement le certificat HTTPS via Let's Encrypt.
+
+hush.labault.dev {
+    encode gzip zstd
+
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        Permissions-Policy "geolocation=(), camera=(), microphone=()"
+        -Server
+    }
+
+    reverse_proxy localhost:8080 {
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto {scheme}
+        header_up Host {host}
+    }
+
+    log {
+        output file /var/log/caddy/hush.log {
+            roll_size 10mb
+            roll_keep 5
+        }
+        format console
+    }
+}
