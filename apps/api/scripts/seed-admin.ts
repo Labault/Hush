@@ -1,9 +1,11 @@
 import 'dotenv/config';
 import * as readline from 'readline';
 import * as bcrypt from 'bcrypt';
+import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+const prisma = new PrismaClient({ adapter });
 const SALT_ROUNDS = 12;
 const forceUpsert = process.argv.includes('--force');
 
@@ -58,13 +60,14 @@ async function main() {
     console.log(
       `Admin "${username}" créé avec succès. Tu peux te connecter sur /auth/login.`,
     );
+    process.exit(0);
+  } catch (err) {
+    console.error(err);
+    process.exit(1);
   } finally {
     rl.close();
     await prisma.$disconnect();
   }
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+main();
