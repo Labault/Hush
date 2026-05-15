@@ -39,7 +39,6 @@ export class AuthController {
       secure: isProduction,
       sameSite: 'lax',
       maxAge: COOKIE_MAX_AGE,
-      signed: true,
     });
 
     const csrfToken = this.csrfService.generateToken();
