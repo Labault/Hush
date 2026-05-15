@@ -26,3 +26,24 @@ export type HealthResponse = {
   timestamp: string
   db: 'connected' | 'error'
 }
+
+export type CreatePlayerPayload = {
+  pseudo: string
+}
+
+export type UpdatePlayerPayload = {
+  pseudo: string
+}
+
+export type CreateSessionPayload = {
+  playerId: string
+  startedAt: string
+  endedAt: string
+}
+
+export type LeaderboardEntry = {
+  id: string
+  pseudoSnapshot: string
+  durationMs: number
+  createdAt: string
+}
