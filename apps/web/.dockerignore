@@ -1,13 +1,10 @@
 node_modules
 dist
-build
 .env
 .env.*
 !.env.example
-!.env.prod.example
-.DS_Store
 *.log
 coverage
-.vite
-.turbo
-.next
+.git
+.gitignore
+README.md

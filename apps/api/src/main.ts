@@ -7,13 +7,16 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const isDev = process.env.NODE_ENV !== 'production';
+
+  // Trust Caddy/Nginx reverse-proxy so secure cookies work over HTTPS
+  app.getHttpAdapter().getInstance().set('trust proxy', 1);
+
   app.use(cookieParser(process.env.COOKIE_SECRET));
   app.enableCors({
-    origin: [
-      'http://localhost:5173',
-      'http://localhost:5174',
-      'http://localhost:5175',
-    ],
+    origin: isDev
+      ? ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175']
+      : true,
     credentials: true,
   });
 
