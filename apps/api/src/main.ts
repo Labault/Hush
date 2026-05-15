@@ -2,10 +2,12 @@ import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.use(cookieParser(process.env.COOKIE_SECRET));
   app.enableCors({
     origin: [
       'http://localhost:5173',
@@ -28,6 +30,7 @@ async function bootstrap() {
     .setTitle('Hush API')
     .setDescription('API pour le jeu Hush - tiens le silence le plus longtemps')
     .setVersion('0.1.0')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

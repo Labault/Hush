@@ -16,7 +16,7 @@ model Player {
 model Session {
   id             String   @id @default(uuid())
   playerId       String
-  player         Player   @relation(fields: [playerId], references: [id])
+  player         Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
   pseudoSnapshot String
   startedAt      DateTime
   endedAt        DateTime
