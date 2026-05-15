@@ -98,4 +98,28 @@ describe('SessionsService', () => {
       select: { id: true, pseudoSnapshot: true, durationMs: true, createdAt: true },
     });
   });
+
+  it('getByPlayer calls findMany with correct args', async () => {
+    prismaMock.player.findUnique.mockResolvedValue(mockPlayer);
+    prismaMock.session.findMany.mockResolvedValue([]);
+    await service.getByPlayer(mockPlayer.id, 5);
+    expect(prismaMock.session.findMany).toHaveBeenCalledWith({
+      where: { playerId: mockPlayer.id, isValid: true },
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+      select: {
+        id: true,
+        pseudoSnapshot: true,
+        durationMs: true,
+        createdAt: true,
+        startedAt: true,
+        endedAt: true,
+      },
+    });
+  });
+
+  it('getByPlayer throws NotFoundException if player not found', async () => {
+    prismaMock.player.findUnique.mockResolvedValue(null);
+    await expect(service.getByPlayer('nonexistent-uuid', 5)).rejects.toThrow(NotFoundException);
+  });
 });

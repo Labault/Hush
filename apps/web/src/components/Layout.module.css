@@ -1,29 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
-
-:root {
-  --bg: #0f0f10;
-  --bg-header: #161618;
-  --text: #c9c9cc;
-  --text-muted: #6b6b70;
-  --border: #2a2a2e;
-  --accent: #e0e0e0;
-}
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 16px;
-  line-height: 1.6;
-  min-height: 100vh;
-}
-
 .wrapper {
   display: flex;
   flex-direction: column;
@@ -34,13 +8,13 @@ body {
   position: sticky;
   top: 0;
   z-index: 10;
-  background: var(--bg-header);
-  border-bottom: 1px solid var(--border);
-  padding: 0 1.5rem;
+  background: var(--color-bg-elevated);
+  border-bottom: 1px solid rgba(90, 74, 58, 0.3);
+  padding: 0 var(--space-5);
 }
 
 .headerInner {
-  max-width: 720px;
+  max-width: 640px;
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -49,46 +23,61 @@ body {
 }
 
 .logo {
-  color: var(--accent);
-  font-weight: 600;
-  font-size: 1.1rem;
-  letter-spacing: 0.08em;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: var(--text-xl);
+  color: var(--color-accent);
   text-decoration: none;
-  text-transform: uppercase;
+  transition: color var(--duration-fast) var(--ease);
 }
 
-.logo:hover {
-  color: #fff;
+@media (hover: hover) {
+  .logo:hover {
+    color: var(--color-accent-hover);
+  }
 }
 
 .nav {
   display: flex;
-  gap: 1.5rem;
+  gap: var(--space-5);
 }
 
 .navLink {
-  color: var(--text-muted);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
   text-decoration: none;
-  font-size: 0.9rem;
-  transition: color 0.15s;
+  transition: color var(--duration-fast) var(--ease);
 }
 
-.navLink:hover {
-  color: var(--text);
+@media (hover: hover) {
+  .navLink:hover {
+    color: var(--color-accent);
+  }
 }
 
 .main {
   flex: 1;
-  max-width: 720px;
+  max-width: 640px;
   width: 100%;
   margin: 0 auto;
-  padding: 3rem 1.5rem;
+  padding-inline: var(--space-5);
+  padding-block: var(--space-7);
 }
 
 .footer {
   text-align: center;
-  padding: 1.5rem;
-  color: var(--text-muted);
-  font-size: 0.8rem;
-  border-top: 1px solid var(--border);
+  padding: var(--space-6);
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+}
+
+@media (max-width: 640px) {
+  .header {
+    padding: 0 var(--space-4);
+  }
+
+  .main {
+    padding-inline: var(--space-4);
+    padding-block: var(--space-6);
+  }
 }

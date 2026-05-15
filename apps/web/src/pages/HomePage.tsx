@@ -1,6 +1,9 @@
 import { useState, useEffect, type FormEvent } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import { usePlayer } from '../hooks/usePlayer'
+import { getSessionsByPlayer } from '../api/sessions'
+import { formatDuration, formatRelativeDate } from '../lib/format'
 import styles from './HomePage.module.css'
 
 export default function HomePage() {
@@ -18,8 +21,14 @@ export default function HomePage() {
   const [updateError, setUpdateError] = useState('')
   const [updating, setUpdating] = useState(false)
 
+  const { data: recentSessions } = useQuery({
+    queryKey: ['sessions-by-player', player?.id],
+    queryFn: () => getSessionsByPlayer(player!.id, 5),
+    enabled: !!player,
+  })
+
   if (isLoading) {
-    return <div className={styles.container}><p>Chargement…</p></div>
+    return <div className={styles.container}><p className={styles.loadingText}>Chargement…</p></div>
   }
 
   if (!player) {
@@ -42,23 +51,29 @@ export default function HomePage() {
 
     return (
       <div className={styles.container}>
-        <h1 className={styles.title}>Bienvenue sur Hush</h1>
-        <p className={styles.subtitle}>Choisis ton pseudo pour commencer</p>
-        <form className={styles.form} onSubmit={handleCreate}>
-          <input
-            className={styles.input}
-            type="text"
-            placeholder="Ton pseudo"
-            value={pseudo}
-            onChange={(e) => setPseudo(e.target.value)}
-            maxLength={30}
-            required
-          />
-          {createError && <p className={styles.error}>{createError}</p>}
-          <button className={styles.btnPrimary} type="submit" disabled={creating}>
-            {creating ? 'Création…' : 'Créer mon profil'}
-          </button>
-        </form>
+        <h1 className={styles.heroTitle}>Hush</h1>
+        <p className={styles.heroSubtitle}>L'art du silence</p>
+        <div className={styles.createSection}>
+          <p className={styles.createLabel}>Choisis ton nom</p>
+          <form className={styles.form} onSubmit={handleCreate}>
+            <label className={styles.srOnly} htmlFor="pseudo-input">Ton pseudo</label>
+            <input
+              id="pseudo-input"
+              className={styles.input}
+              type="text"
+              placeholder="Ton pseudo"
+              value={pseudo}
+              onChange={(e) => setPseudo(e.target.value)}
+              maxLength={30}
+              required
+              aria-describedby={createError ? 'create-error' : undefined}
+            />
+            {createError && <p id="create-error" className={styles.error} role="alert">{createError}</p>}
+            <button className={styles.btnPrimary} type="submit" disabled={creating}>
+              {creating ? 'Création…' : 'Commencer'}
+            </button>
+          </form>
+        </div>
       </div>
     )
   }
@@ -84,22 +99,47 @@ export default function HomePage() {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Salut, {player.pseudo}</h1>
-      <p className={styles.subtitle}>Prêt à tenir le silence ?</p>
-      <div className={styles.actions}>
+      <h1 className={styles.welcomeTitle}>Bonjour, {player.pseudo}</h1>
+      <p className={styles.welcomeSubtitle}>Prêt à tenir le silence ?</p>
+
+      <div className={styles.primaryAction}>
         <button className={styles.btnPrimary} onClick={() => navigate('/session')}>
           Démarrer une session
         </button>
-        <button className={styles.btnSecondary} onClick={() => { setShowUpdateForm(!showUpdateForm); setUpdateError('') }}>
+      </div>
+
+      <section className={styles.recentSection} aria-label="Mes 5 dernières sessions">
+        <h2 className={styles.recentTitle}>Mes dernières sessions</h2>
+        {recentSessions && recentSessions.length > 0 ? (
+          <ul className={styles.recentList}>
+            {recentSessions.map((s) => (
+              <li key={s.id} className={styles.recentItem}>
+                <span className={styles.recentDuration}>{formatDuration(s.durationMs)}</span>
+                <span className={styles.recentDate}>{formatRelativeDate(s.createdAt)}</span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className={styles.recentEmpty}>Aucune session encore. Le silence t'attend.</p>
+        )}
+      </section>
+
+      <div className={styles.secondaryActions}>
+        <Link to="/leaderboard" className={styles.btnGhost}>Voir le classement</Link>
+        <button
+          className={styles.btnGhost}
+          onClick={() => { setShowUpdateForm(!showUpdateForm); setUpdateError('') }}
+          aria-expanded={showUpdateForm}
+        >
           Changer mon pseudo
         </button>
-        <button className={styles.btnTertiary} onClick={() => navigate('/leaderboard')}>
-          Voir le classement
-        </button>
       </div>
-      {showUpdateForm && (
+
+      <div className={`${styles.toggleForm} ${showUpdateForm ? styles.toggleFormOpen : ''}`} aria-hidden={!showUpdateForm}>
         <form className={styles.inlineForm} onSubmit={handleUpdate}>
+          <label className={styles.srOnly} htmlFor="update-pseudo-input">Nouveau pseudo</label>
           <input
+            id="update-pseudo-input"
             className={styles.input}
             type="text"
             placeholder="Nouveau pseudo"
@@ -107,13 +147,25 @@ export default function HomePage() {
             onChange={(e) => setNewPseudo(e.target.value)}
             maxLength={30}
             required
+            tabIndex={showUpdateForm ? 0 : -1}
+            aria-describedby={updateError ? 'update-error' : undefined}
           />
-          {updateError && <p className={styles.error}>{updateError}</p>}
-          <button className={styles.btnPrimary} type="submit" disabled={updating}>
-            {updating ? 'Mise à jour…' : 'Valider'}
-          </button>
+          {updateError && <p id="update-error" className={styles.error} role="alert">{updateError}</p>}
+          <div className={styles.inlineFormActions}>
+            <button className={styles.btnPrimary} type="submit" disabled={updating} tabIndex={showUpdateForm ? 0 : -1}>
+              {updating ? 'Mise à jour…' : 'Sauvegarder'}
+            </button>
+            <button
+              type="button"
+              className={styles.btnGhost}
+              onClick={() => { setShowUpdateForm(false); setNewPseudo(''); setUpdateError('') }}
+              tabIndex={showUpdateForm ? 0 : -1}
+            >
+              Annuler
+            </button>
+          </div>
         </form>
-      )}
+      </div>
     </div>
   )
 }

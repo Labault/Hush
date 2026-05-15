@@ -38,72 +38,95 @@ function SessionContent({ player }: { player: Player }) {
   const { phase, durationMs, error } = state
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} key={phase}>
       {phase === 'waiting' && (
-        <>
-          <h1 className={styles.title}>Prêt ?</h1>
+        <div className={styles.phase}>
+          <h1 className={styles.phaseTitle}>Tiens le silence</h1>
           <p className={styles.instructions}>
             Cache cet onglet ou minimise la fenêtre.<br />
-            Le timer démarrera dès que l'onglet sera masqué.
+            Le silence commence dès que tu disparais.
           </p>
-          {wakeLock.state === 'unsupported' && (
-            <p className={styles.wakeLockWarning}>
-              Ton navigateur ne supporte pas le Wake Lock, l'écran peut s'éteindre.
-            </p>
-          )}
-          <Link to="/" className={styles.btnSecondary}>← Retour</Link>
-        </>
+          <div className={styles.wakeLockIndicator}>
+            {wakeLock.state === 'active' && (
+              <span className={styles.wakeLockActive}>
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                  <circle cx="6" cy="6" r="5" stroke="currentColor" strokeWidth="1.5" />
+                  <circle cx="6" cy="6" r="2" fill="currentColor" />
+                </svg>
+                Écran maintenu éveillé
+              </span>
+            )}
+            {wakeLock.state === 'unsupported' && (
+              <span className={styles.wakeLockWarn}>Garde ta fenêtre éveillée</span>
+            )}
+          </div>
+          <Link to="/" className={styles.btnGhost} aria-label="Retour à l'accueil">Retour</Link>
+        </div>
       )}
 
       {phase === 'hidden' && (
-        <div className={styles.silenceWrap}>
-          <p className={styles.silenceText}>Silence en cours…</p>
+        <div className={styles.phase}>
+          <div className={styles.pulseWrap} aria-hidden="true">
+            <div className={styles.pulse} />
+          </div>
+          <p className={styles.silenceText}>Silence en cours</p>
         </div>
       )}
 
       {phase === 'completed' && (
-        <>
+        <div className={styles.phase}>
           <p className={styles.timer}>{formatDuration(durationMs)}</p>
-          <p className={styles.sub}>Soumission en cours…</p>
-        </>
+          <p className={styles.sub}>Soumission…</p>
+        </div>
       )}
 
       {phase === 'tooShort' && (
-        <>
-          <h1 className={styles.title}>Trop court !</h1>
+        <div className={styles.phase}>
+          <div className={styles.iconCircle} style={{ color: 'var(--color-error)' }} aria-hidden="true">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+              <circle cx="16" cy="16" r="14" stroke="currentColor" strokeWidth="2" />
+              <line x1="9" y1="9" x2="23" y2="23" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          </div>
+          <h1 className={styles.phaseTitleError}>Trop court</h1>
           <p className={styles.sub}>
-            {Math.floor(durationMs / 1000)}s — Il faut au moins 10 secondes.
+            {Math.floor(durationMs / 1000)}s — il faut au moins 10 secondes
           </p>
           <div className={styles.actions}>
             <button className={styles.btnPrimary} onClick={reset}>Réessayer</button>
-            <Link to="/" className={styles.btnSecondary}>← Retour</Link>
+            <Link to="/" className={styles.btnGhost}>Retour</Link>
           </div>
-        </>
+        </div>
       )}
 
       {phase === 'submitted' && (
-        <>
+        <div className={styles.phase}>
+          <div className={styles.iconCircle} style={{ color: 'var(--color-accent)' }} aria-hidden="true">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+              <circle cx="16" cy="16" r="14" stroke="currentColor" strokeWidth="2" />
+              <polyline points="10,16 14,20 22,12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+          <h1 className={styles.phaseTitleSuccess}>Session enregistrée</h1>
           <p className={styles.timer}>{formatDuration(durationMs)}</p>
-          <p className={styles.successMsg}>Session enregistrée</p>
           <div className={styles.actions}>
             <button className={styles.btnPrimary} onClick={() => navigate('/leaderboard')}>
               Voir le classement
             </button>
-            <button className={styles.btnSecondary} onClick={reset}>Nouvelle session</button>
-            <Link to="/" className={styles.btnTertiary}>← Retour</Link>
+            <button className={styles.btnGhost} onClick={reset}>Nouvelle session</button>
           </div>
-        </>
+        </div>
       )}
 
       {phase === 'failed' && (
-        <>
-          <h1 className={styles.title}>Erreur</h1>
-          <p className={styles.errorMsg}>Erreur lors de l'envoi : {error}</p>
+        <div className={styles.phase}>
+          <h1 className={styles.phaseTitleError}>Erreur</h1>
+          <p className={styles.errorMsg}>{error}</p>
           <div className={styles.actions}>
             <button className={styles.btnPrimary} onClick={submit}>Réessayer l'envoi</button>
-            <Link to="/" className={styles.btnSecondary}>← Retour</Link>
+            <Link to="/" className={styles.btnGhost}>Retour</Link>
           </div>
-        </>
+        </div>
       )}
     </div>
   )

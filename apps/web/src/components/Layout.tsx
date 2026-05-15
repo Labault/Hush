@@ -15,7 +15,7 @@ export default function Layout() {
       <main className={styles.main}>
         <Outlet />
       </main>
-      <footer className={styles.footer}>Hush — Tiens le silence</footer>
+      <footer className={styles.footer}>Hush — l'art du silence</footer>
     </div>
   )
 }

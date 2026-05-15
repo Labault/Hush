@@ -1,134 +1,196 @@
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes breathe {
+  from { opacity: 0.3; transform: scale(1); }
+  to { opacity: 0.9; transform: scale(1.15); }
+}
+
 .container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  gap: 2rem;
-  padding: 4rem 1rem;
   min-height: 60vh;
 }
 
-.title {
-  font-size: 2rem;
-  font-weight: 600;
-  color: #e0e0e0;
+.phase {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+  animation: fadeIn var(--duration-normal) var(--ease) both;
+  width: 100%;
+}
+
+.phaseTitle {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: var(--text-2xl);
+  font-weight: 400;
+  color: var(--color-text-secondary);
+}
+
+.phaseTitleSuccess {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: var(--text-2xl);
+  font-weight: 400;
+  color: var(--color-accent);
+}
+
+.phaseTitleError {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: var(--text-2xl);
+  font-weight: 400;
+  color: var(--color-error);
 }
 
 .instructions {
-  font-size: 1rem;
-  color: #6b6b70;
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
   line-height: 1.8;
   max-width: 360px;
 }
 
-.wakeLockWarning {
-  font-size: 0.85rem;
-  color: #a07030;
-  max-width: 340px;
+.wakeLockIndicator {
+  min-height: 20px;
 }
 
-.silenceWrap {
+.wakeLockActive {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--color-accent-dim);
+}
+
+.wakeLockWarn {
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+}
+
+/* Pulse animation for hidden phase */
+.pulseWrap {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 40vh;
+  width: 120px;
+  height: 120px;
+}
+
+.pulse {
+  width: 120px;
+  height: 120px;
+  border-radius: var(--radius-full);
+  background: radial-gradient(circle, var(--color-accent) 0%, transparent 70%);
+  animation: breathe 4s ease-in-out infinite alternate;
 }
 
 .silenceText {
-  font-size: 1.25rem;
-  color: #555;
-  animation: pulse 3s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 1; }
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: var(--text-lg);
+  color: var(--color-accent-dim);
 }
 
 .timer {
-  font-size: 4rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: #e0e0e0;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: var(--text-4xl);
+  font-weight: 500;
+  color: var(--color-accent);
   font-variant-numeric: tabular-nums;
+  line-height: 1;
 }
 
 .sub {
-  font-size: 1rem;
-  color: #6b6b70;
-}
-
-.successMsg {
-  font-size: 1rem;
-  color: #5a9e6f;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
 }
 
 .errorMsg {
-  font-size: 0.95rem;
-  color: #e05a5a;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
   max-width: 360px;
+}
+
+.iconCircle {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .actions {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--space-3);
   width: 100%;
   max-width: 320px;
 }
 
 .btnPrimary {
   width: 100%;
-  padding: 0.75rem 1.5rem;
-  background: #e0e0e0;
-  color: #0f0f10;
+  padding: 14px var(--space-6);
+  background: var(--color-accent);
+  color: var(--color-bg);
   border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  font-family: inherit;
+  border-radius: var(--radius-md);
+  font-size: var(--text-base);
+  font-weight: 500;
+  font-family: var(--font-sans);
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background var(--duration-fast) var(--ease), transform var(--duration-fast) var(--ease);
+  min-height: 44px;
 }
 
-.btnPrimary:hover {
-  background: #fff;
+@media (hover: hover) {
+  .btnPrimary:hover {
+    background: var(--color-accent-hover);
+  }
 }
 
-.btnSecondary {
-  padding: 0.65rem 1.25rem;
+.btnPrimary:active {
+  transform: scale(0.98);
+}
+
+.btnGhost {
+  padding: var(--space-2) var(--space-4);
   background: transparent;
-  color: #c9c9cc;
-  border: 1px solid #2a2a2e;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-family: inherit;
+  color: var(--color-text-secondary);
+  border: none;
+  font-size: var(--text-sm);
+  font-family: var(--font-sans);
   cursor: pointer;
   text-decoration: none;
-  transition: border-color 0.15s, color 0.15s;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--duration-fast) var(--ease);
+  min-height: 44px;
 }
 
-.btnSecondary:hover {
-  border-color: #555;
-  color: #e0e0e0;
+@media (hover: hover) {
+  .btnGhost:hover {
+    color: var(--color-text-primary);
+  }
 }
 
-.btnTertiary {
-  padding: 0.65rem 1.25rem;
-  background: transparent;
-  color: #6b6b70;
-  border: none;
-  font-size: 0.9rem;
-  font-family: inherit;
-  cursor: pointer;
-  text-decoration: underline;
-  transition: color 0.15s;
-  display: inline-block;
-}
+@media (max-width: 640px) {
+  .timer {
+    font-size: 56px;
+  }
 
-.btnTertiary:hover {
-  color: #c9c9cc;
+  .phaseTitle,
+  .phaseTitleSuccess,
+  .phaseTitleError {
+    font-size: var(--text-xl);
+  }
 }

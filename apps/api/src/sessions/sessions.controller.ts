@@ -3,7 +3,9 @@ import {
   Controller,
   DefaultValuePipe,
   Get,
+  Param,
   ParseIntPipe,
+  ParseUUIDPipe,
   Post,
   Query,
 } from '@nestjs/common';
@@ -32,5 +34,16 @@ export class SessionsController {
   ) {
     const capped = Math.min(limit, 100);
     return this.sessionsService.getLeaderboard(capped);
+  }
+
+  @Get('by-player/:playerId')
+  @ApiResponse({ status: 200, description: 'Sessions by player' })
+  @ApiResponse({ status: 404, description: 'Player not found' })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  getByPlayer(
+    @Param('playerId', ParseUUIDPipe) playerId: string,
+    @Query('limit', new DefaultValuePipe(5), ParseIntPipe) limit: number,
+  ) {
+    return this.sessionsService.getByPlayer(playerId, Math.min(limit, 20));
   }
 }

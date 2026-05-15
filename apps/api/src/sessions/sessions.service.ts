@@ -49,4 +49,23 @@ export class SessionsService {
       select: { id: true, pseudoSnapshot: true, durationMs: true, createdAt: true },
     });
   }
+
+  async getByPlayer(playerId: string, limit = 5) {
+    const player = await this.prisma.player.findUnique({ where: { id: playerId } });
+    if (!player) throw new NotFoundException(`Player ${playerId} not found`);
+
+    return this.prisma.session.findMany({
+      where: { playerId, isValid: true },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+      select: {
+        id: true,
+        pseudoSnapshot: true,
+        durationMs: true,
+        createdAt: true,
+        startedAt: true,
+        endedAt: true,
+      },
+    });
+  }
 }
