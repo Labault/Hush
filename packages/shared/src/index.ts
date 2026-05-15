@@ -21,6 +21,42 @@ export type Admin = {
   createdAt: string
 }
 
+export type AdminStats = {
+  totalPlayers: number
+  totalSessions: number
+  totalInvalidSessions: number
+  avgDurationMs: number | null
+  maxDurationMs: number | null
+  sessionsLast24h: number
+  sessionsLast7d: number
+}
+
+export type PaginatedResponse<T> = {
+  items: T[]
+  total: number
+  page: number
+  perPage: number
+}
+
+export type AdminSession = {
+  id: string
+  playerId: string
+  pseudoSnapshot: string
+  durationMs: number
+  isValid: boolean
+  startedAt: string
+  endedAt: string
+  createdAt: string
+  player: { id: string; pseudo: string }
+}
+
+export type AdminPlayer = {
+  id: string
+  pseudo: string
+  createdAt: string
+  _count: { sessions: number }
+}
+
 export type HealthResponse = {
   status: 'ok'
   timestamp: string
