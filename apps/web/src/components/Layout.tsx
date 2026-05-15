@@ -6,10 +6,11 @@ export default function Layout() {
     <div className={styles.wrapper}>
       <header className={styles.header}>
         <div className={styles.headerInner}>
-          <Link to="/" className={styles.logo}>Hush</Link>
-          <nav className={styles.nav}>
-            <Link to="/leaderboard" className={styles.navLink}>Classement</Link>
-          </nav>
+          <Link to="/" className={styles.logo}>
+            <span className={styles.logoDot} aria-hidden="true" />
+            <span className={styles.logoText}>HUSH</span>
+          </Link>
+          <Link to="/leaderboard" className={styles.nav}>Classement</Link>
         </div>
       </header>
       <main className={styles.main}>

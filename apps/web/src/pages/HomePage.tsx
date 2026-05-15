@@ -51,10 +51,15 @@ export default function HomePage() {
 
     return (
       <div className={styles.container}>
-        <h1 className={styles.heroTitle}>Hush</h1>
-        <p className={styles.heroSubtitle}>L'art du silence</p>
+        <div className={styles.pill} aria-label="Statut">
+          <span className={styles.pillDot} aria-hidden="true" />
+          Online · Silence Protocol
+        </div>
+        <h1 className={styles.heroTitle}>Tiens le silence.</h1>
+        <p className={styles.heroSubtitle}>
+          Cache l'onglet. Le compteur monte. Reviens quand tu craques.
+        </p>
         <div className={styles.createSection}>
-          <p className={styles.createLabel}>Choisis ton nom</p>
           <form className={styles.form} onSubmit={handleCreate}>
             <label className={styles.srOnly} htmlFor="pseudo-input">Ton pseudo</label>
             <input
@@ -70,7 +75,7 @@ export default function HomePage() {
             />
             {createError && <p id="create-error" className={styles.error} role="alert">{createError}</p>}
             <button className={styles.btnPrimary} type="submit" disabled={creating}>
-              {creating ? 'Création…' : 'Commencer'}
+              {creating ? 'Création…' : 'Commencer →'}
             </button>
           </form>
         </div>
@@ -99,33 +104,36 @@ export default function HomePage() {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.welcomeTitle}>Bonjour, {player.pseudo}</h1>
-      <p className={styles.welcomeSubtitle}>Prêt à tenir le silence ?</p>
+      <div className={styles.pill}>
+        <span className={styles.pillDot} aria-hidden="true" />
+        Connecté en tant que {player.pseudo}
+      </div>
+      <h1 className={styles.welcomeTitle}>Bonjour, {player.pseudo}.</h1>
+      <p className={styles.welcomeSubtitle}>Prêt à recommencer ?</p>
 
       <div className={styles.primaryAction}>
         <button className={styles.btnPrimary} onClick={() => navigate('/session')}>
-          Démarrer une session
+          Démarrer une session →
         </button>
       </div>
 
-      <section className={styles.recentSection} aria-label="Mes 5 dernières sessions">
-        <h2 className={styles.recentTitle}>Mes dernières sessions</h2>
+      <section className={styles.historyList} aria-label="Mes 5 dernières sessions">
+        <h2 className={styles.historyTitle}>Tes dernières sessions</h2>
         {recentSessions && recentSessions.length > 0 ? (
-          <ul className={styles.recentList}>
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
             {recentSessions.map((s) => (
-              <li key={s.id} className={styles.recentItem}>
-                <span className={styles.recentDuration}>{formatDuration(s.durationMs)}</span>
-                <span className={styles.recentDate}>{formatRelativeDate(s.createdAt)}</span>
+              <li key={s.id} className={styles.historyItem}>
+                <span className={styles.historyDuration}>{formatDuration(s.durationMs)}</span>
+                <span className={styles.historyDate}>{formatRelativeDate(s.createdAt)}</span>
               </li>
             ))}
           </ul>
         ) : (
-          <p className={styles.recentEmpty}>Aucune session encore. Le silence t'attend.</p>
+          <p className={styles.historyEmpty}>Aucune session encore. Le silence t'attend.</p>
         )}
       </section>
 
       <div className={styles.secondaryActions}>
-        <Link to="/leaderboard" className={styles.btnGhost}>Voir le classement</Link>
         <button
           className={styles.btnGhost}
           onClick={() => { setShowUpdateForm(!showUpdateForm); setUpdateError('') }}
@@ -133,6 +141,7 @@ export default function HomePage() {
         >
           Changer mon pseudo
         </button>
+        <Link to="/leaderboard" className={styles.btnTertiary}>Voir le classement →</Link>
       </div>
 
       <div className={`${styles.toggleForm} ${showUpdateForm ? styles.toggleFormOpen : ''}`} aria-hidden={!showUpdateForm}>

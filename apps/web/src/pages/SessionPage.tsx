@@ -41,10 +41,10 @@ function SessionContent({ player }: { player: Player }) {
     <div className={styles.container} key={phase}>
       {phase === 'waiting' && (
         <div className={styles.phase}>
-          <h1 className={styles.phaseTitle}>Tiens le silence</h1>
+          <h1 className={styles.phaseTitle}>Prêt ?</h1>
           <p className={styles.instructions}>
             Cache cet onglet ou minimise la fenêtre.<br />
-            Le silence commence dès que tu disparais.
+            Le compteur démarre dès que tu disparais.
           </p>
           <div className={styles.wakeLockIndicator}>
             {wakeLock.state === 'active' && (
@@ -82,10 +82,11 @@ function SessionContent({ player }: { player: Player }) {
 
       {phase === 'tooShort' && (
         <div className={styles.phase}>
-          <div className={styles.iconCircle} style={{ color: 'var(--color-error)' }} aria-hidden="true">
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-              <circle cx="16" cy="16" r="14" stroke="currentColor" strokeWidth="2" />
-              <line x1="9" y1="9" x2="23" y2="23" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <div className={`${styles.iconCircle} ${styles.iconCircleError}`} aria-hidden="true">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+              <circle cx="20" cy="20" r="18" stroke="currentColor" strokeWidth="2" />
+              <line x1="12" y1="12" x2="28" y2="28" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <line x1="28" y1="12" x2="12" y2="28" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
           </div>
           <h1 className={styles.phaseTitleError}>Trop court</h1>
@@ -101,17 +102,17 @@ function SessionContent({ player }: { player: Player }) {
 
       {phase === 'submitted' && (
         <div className={styles.phase}>
-          <div className={styles.iconCircle} style={{ color: 'var(--color-accent)' }} aria-hidden="true">
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-              <circle cx="16" cy="16" r="14" stroke="currentColor" strokeWidth="2" />
-              <polyline points="10,16 14,20 22,12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <div className={`${styles.iconCircle} ${styles.iconCircleSuccess}`} aria-hidden="true">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+              <circle cx="20" cy="20" r="18" stroke="currentColor" strokeWidth="2" />
+              <polyline points="12,20 17,25 28,14" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
           <h1 className={styles.phaseTitleSuccess}>Session enregistrée</h1>
-          <p className={styles.timer}>{formatDuration(durationMs)}</p>
+          <p className={styles.timerSubmitted}>{formatDuration(durationMs)}</p>
           <div className={styles.actions}>
             <button className={styles.btnPrimary} onClick={() => navigate('/leaderboard')}>
-              Voir le classement
+              Voir le classement →
             </button>
             <button className={styles.btnGhost} onClick={reset}>Nouvelle session</button>
           </div>
@@ -120,7 +121,14 @@ function SessionContent({ player }: { player: Player }) {
 
       {phase === 'failed' && (
         <div className={styles.phase}>
-          <h1 className={styles.phaseTitleError}>Erreur</h1>
+          <div className={`${styles.iconCircle} ${styles.iconCircleError}`} aria-hidden="true">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+              <circle cx="20" cy="20" r="18" stroke="currentColor" strokeWidth="2" />
+              <line x1="20" y1="12" x2="20" y2="22" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+              <circle cx="20" cy="27" r="1.5" fill="currentColor" />
+            </svg>
+          </div>
+          <h1 className={styles.phaseTitleError}>Erreur lors de l'envoi</h1>
           <p className={styles.errorMsg}>{error}</p>
           <div className={styles.actions}>
             <button className={styles.btnPrimary} onClick={submit}>Réessayer l'envoi</button>

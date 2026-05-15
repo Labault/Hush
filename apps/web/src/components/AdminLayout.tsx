@@ -11,7 +11,10 @@ export default function AdminLayout() {
         <div className={styles.headerInner}>
           <div className={styles.headerLeft}>
             <Link to="/" className={styles.backLink}>← Retour au site</Link>
-            <span className={styles.logo}>Hush Admin</span>
+            <span className={styles.logo}>
+              <span className={styles.logoDot} aria-hidden="true" />
+              Hush Admin
+            </span>
           </div>
           <nav className={styles.nav}>
             <NavLink
