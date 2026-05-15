@@ -72,9 +72,9 @@ docker exec -it hush-api-prod node -e "
 "
 
 # Coller le contenu de Caddyfile.example dans /etc/caddy/Caddyfile
-sudo nano /etc/caddy/Caddyfile
-sudo caddy validate --config /etc/caddy/Caddyfile
-sudo systemctl reload caddy
+nano /hone/thibault/proxy-global/Caddyfile
+docker compose exec caddy caddy validate --config /etc/caddy/Caddyfile
+docker compose exec caddy caddy reload --config /etc/caddy/Caddyfile
 
 # Vérifier en HTTPS
 curl -I https://hush.labault.dev
@@ -83,7 +83,8 @@ curl -I https://hush.labault.dev
 ### Déploiements ultérieurs
 
 ```bash
-cd ~/apps/hush
+sudo -u deploy -i
+cd /srv/hush
 ./scripts/deploy.sh
 ```
 
