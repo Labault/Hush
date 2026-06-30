@@ -55,13 +55,15 @@ Hush has a worldwide top-100 leaderboard and **no sign-up**. No email, no
 password, no friction — you just play. That raises the obvious question: how do
 you attribute a score to "a player" with nobody logged in?
 
-The `players` module issues an anonymous, server-signed identity (JWT in an
-`HttpOnly` cookie) on first visit. It's enough to attribute and protect scores
-across sessions without ever asking the user for credentials or storing
-personal data. Auth in the app is therefore split in two: **anonymous players**
-(cookie identity, zero PII) for the game itself, and a separate **admin** path
-(`auth` + `admin` modules, bcrypt-hashed credentials, Passport JWT strategy)
-for moderation.
+On first play, the `players` module creates an anonymous player and the server
+generates a random UUID for it (`@default(uuid())`). The browser keeps that
+UUID in `localStorage` (`hush.playerId`) and sends it back to attribute scores
+across sessions, with no account, no email and no password. The only data a
+player provides is a public display pseudo, shown on the leaderboard. Auth in
+the app is therefore split in two: **anonymous players** (a server-generated
+UUID kept client-side in `localStorage`, plus a chosen pseudo) for the game
+itself, and a separate **admin** path (`auth` + `admin` modules, bcrypt-hashed
+credentials, Passport JWT in an `HttpOnly` cookie) for moderation.
 
 ### 3. Self-hosted infrastructure, reproducible from scratch
 
@@ -196,4 +198,4 @@ docker exec hush-postgres-prod pg_dump -U hush hush \
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+All rights reserved.
